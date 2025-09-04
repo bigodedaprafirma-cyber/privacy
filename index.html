@@ -701,7 +701,7 @@
   document.head.appendChild(a);
 </script>
   
-  <script src="js/latest.js" data-utmify-prevent-xcod-sck="" data-utmify-prevent-subids="" async="" defer=""></script>
+  <script src="js/latest.js" data-utmify-prevent-xcod-sck data-utmify-prevent-subids async defer></script>
 
 </head>
 <body>
@@ -843,7 +843,7 @@ Bora viver essa experiência comigo?  🔥
           <!-- Substituído a imagem pelo vídeo com ícone de cadeado -->
           <div class="post-content">
             <div class="post-video-container">
-              <video src="media/caiocastro-video.mp4" class="post-video" autoplay="" loop="" muted="" playsinline="" webkit-playsinline="true" x-webkit-airplay="allow" preload="auto" poster=""></video>
+              <video src="media/caiocastro-video.mp4" class="post-video" autoplay loop muted playsinline webkit-playsinline="true" x-webkit-airplay="allow" preload="auto"></video>
               <div class="video-overlay">
                 <div class="lock-icon">
                   <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -1019,12 +1019,10 @@ Bora viver essa experiência comigo?  🔥
           video.play().catch(e => console.log("Falha ao iniciar com toque:", e));
         }, { once: true });
         
-        // Verifica se o vídeo está pausado e tenta reproduzir novamente
-        setInterval(() => {
-          if (video.paused) {
-            video.play().catch(e => console.log("Falha ao reiniciar vídeo pausado:", e));
-          }
-        }, 1000);
+        // Adiciona listener para quando o vídeo for carregado
+        video.addEventListener('loadeddata', () => {
+          video.play().catch(e => console.log("Falha ao iniciar após carregamento:", e));
+        });
       }
       
       // Promotions dropdown toggle
@@ -1107,6 +1105,26 @@ Bora viver essa experiência comigo?  🔥
           button.classList.remove("pulse");
         });
       });
+
+      // Fallback para imagens que não carregarem
+      const images = document.querySelectorAll('img');
+      images.forEach(img => {
+        img.addEventListener('error', function() {
+          console.log('Imagem não encontrada:', this.src);
+          // Mantém o elemento mas remove o src para evitar erro visual
+          this.style.display = 'none';
+        });
+      });
+
+      // Fallback para vídeo que não carregar
+      const video = document.querySelector('.post-video');
+      if (video) {
+        video.addEventListener('error', function() {
+          console.log('Vídeo não encontrado:', this.src);
+          // Esconde o container do vídeo se não carregar
+          this.closest('.post-video-container').style.display = 'none';
+        });
+      }
     });
   </script>
   
